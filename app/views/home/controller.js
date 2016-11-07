@@ -15,52 +15,51 @@
 		vm.title = "This is the home page.";
 		// vm.textCount = 0;
 		vm.foundUrl = "";
-		var checkInterval = 3000; // milliseconds
+		var checkInterval = 1000; // milliseconds
 		var stopInterval = null;
 
-		var wordMap = {};
+		var wordMap = {}; // TODO: this should be a LRU cache
 
 		// vm.onKeyUp = function () {
 		// 	// vm.textCount = vm.text.length;
 		// 	vm.foundUrl = detectUrl(vm.text);
 		// };
 
-		var intervalFunc = function (str) {
-			var words = str.split(" ");
+		var intervalFunc = function () {
+			var words = vm.text.split(" ");
+			console.log("word array: " + words);
 
 			for (var i = 0; i < words.length; i++) {
 				if (wordMap.hasOwnProperty(words[i])) {
-					vm.foundUrl = words[i];
-					return;
+					if (wordMap[words[i]] === true) {
+						vm.foundUrl = words[i];
+						return;
+					} else {
+						continue;
+					}
 				}
 
+				// match expression - insert in to wordMap
+				// TODO: this is expensive so run it as little as possible
 				var res = pattern.exec(words[i]);
 				if (res !== null) {
 					wordMap[words[i]] = true;
+					console.log(JSON.stringify(wordMap));
 					vm.foundUrl = words[i];
 					return;
+				} else {
+					wordMap[words[i]] = false;
 				}
-
-				// no URL found!
-				vm.foundUrl = "";
 			}
+			// no URL found!
+			vm.foundUrl = "";
 		};
 
 		// start
 		vm.onFocus = function () {
 			console.log('Begin polling...');
 
-			stopInterval = $interval(intervalFunc, checkInterval, /*count == 0 for indefinite */ 0, true, vm.text);
-
-			// stopInterval = $interval(function(){
-			// 	var res = pattern.exec(vm.text);
-			// 	if (res !== null) {
-			// 		console.log("Result: " + res);
-			// 		vm.foundUrl = res[0];
-			// 	} else {
-			// 		vm.foundUrl = "";
-			// 	}
-			// }, checkInterval);
+			stopInterval = $interval(intervalFunc, checkInterval, /*count == 0 for indefinite */ 0, true);
 		};
 
 		// stop
