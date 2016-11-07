@@ -3,8 +3,9 @@
 		<H1 flex>{{vm.title}}</H1>
 		<md-input-container flex>
 			<label>Begin Typing</label>
-			<input ng-model="vm.text" ng-keyup="vm.onKeyUp()">
+			<input ng-model="vm.text" ng-focus="vm.onFocus()" ng-blur="vm.onBlur()">
 		</md-input-container>
-		<h4>{{vm.textCount}}</h4>
+		<h4>URL: {{vm.foundUrl}}</h4>
+		<h5>{{vm.text}}</h5>
 	</md-content>
 </div>

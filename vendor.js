@@ -9,5 +9,5 @@ module.exports = function() {
 	require('angular-material');
 	require('angular-messages');
 	require('angular-animate');
-	require('url-pattern');
+	// require('url-pattern');
 };
