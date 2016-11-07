@@ -1,0 +1,26 @@
+// Color codes
+$orange:            #de7801; //orange
+$blue:              #108aec; //blue
+$gray:              #ccc; //gray
+$gray-medium:       #666666;
+$gray-dark:         #4e4c50; //dark gray
+$gray-light:        #ebebeb; //light gray
+$white:             #fff; //white
+$white-gray:        #f8f8f8;
+$black:             #000; //black
+$brown-gray:        #979797; //ash in brown shade
+$whitesmoke:        #fbfbfb;
+$whitesmoke-dark:   #f4f4f4;
+$salmon:            #f26f63;
+$salmon-light:      #f68979;
+$midnightblue-dark: #222222;
+$lemon-green:       #8fb879;
+$cadet-gray-blue:   #b9cbcd;
+$powder-gray-blue:  #d9e5e7;
+$darkblue:          #185a7d;
+$dim-white:         #FCFAFA;
+
+//mixins
+@mixin border($color) {
+  border: 1px dashed $color;
+}

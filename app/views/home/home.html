@@ -1,0 +1,10 @@
+<div class="home-container" layout="column" layout-align="center center">
+	<md-content flex>
+		<H1 flex>{{vm.title}}</H1>
+		<md-input-container flex>
+			<label>Begin Typing</label>
+			<input ng-model="vm.text" ng-keyup="vm.onKeyUp()">
+		</md-input-container>
+		<h4>{{vm.textCount}}</h4>
+	</md-content>
+</div>
