@@ -4,7 +4,7 @@
 (function () {
 	'use strict';
 
-	function homeController($interval, $timeout) {
+	function homeController($interval, $timeout, apiService) {
 		var vm = this;
 
 		// URL Regex Pattern
@@ -18,12 +18,14 @@
 		var checkInterval = 1000; // milliseconds
 		var stopInterval = null;
 
-		var wordMap = {}; // TODO: this should be a LRU cache
+		var wordMap = {}; // TODO: this should be a LRU cache - maybe $cacheFactory
 
-		// vm.onKeyUp = function () {
-		// 	// vm.textCount = vm.text.length;
-		// 	vm.foundUrl = detectUrl(vm.text);
-		// };
+		// test service function
+		apiService.setupReqParams('http://www.yahoo.com', 200);
+
+		apiService.requestThumbnail().then(function(result){
+			console.log("received thumbnail response!");
+		});
 
 		var intervalFunc = function () {
 			var words = vm.text.split(" ");
@@ -81,7 +83,7 @@
 		// }
 	}
 
-	homeController.$inject = ['$interval', '$timeout'];
+	homeController.$inject = ['$interval', '$timeout', 'apiDataService'];
 
 	module.exports = homeController;
 })();

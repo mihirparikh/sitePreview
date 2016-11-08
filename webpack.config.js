@@ -1,4 +1,4 @@
-var webpack = require('webpack');
+var webpack = require("webpack");
 var HtmlWebpackPlugin = require("html-webpack-plugin");
 var path = require("path");
 
@@ -18,9 +18,18 @@ module.exports = {
 		publicPath: ""
 	},
 	devServer: {
-		port: 9900
+		port: 9900,
+		proxy: {
+			'/thumb-api/*': {
+				target: 'https://api.thumbalizr.com/',
+				rewrite: function(req) {
+					req.url = req.url.replace(/^\/thumb-api/, '');
+				}
+			}
+		}
 	},
 	devtool: "source-map",
+
 	eslint: {
 		failOnError: true
 	},
