@@ -5,8 +5,8 @@ var path = require("path");
 module.exports = {
 	// context: path.resolve(__dirname, 'app'),
 	entry: {
-		vendor: ["./vendor.js"],
-		app: ["webpack/hot/dev-server", "./app.js"]
+		vendor: ["./app/vendor.js"],
+		app: ["webpack/hot/dev-server", "./app/app.js"]
 	},
 	// output: {
 	// 	path: __dirname + '/js',
@@ -20,10 +20,14 @@ module.exports = {
 	devServer: {
 		port: 9900,
 		proxy: {
-			'/thumb-api/*': {
-				target: 'https://api.thumbalizr.com/',
-				rewrite: function(req) {
-					req.url = req.url.replace(/^\/thumb-api/, '');
+			'/thumb-api*': {
+				target: 'https://api.thumbalizr.com',
+				changeOrigin: true,
+				// rewrite: function(req) {
+				// 	req.url = req.url.replace(/^\/thumb-api/, '');
+				// }
+				pathRewrite: {
+					'^/thumb-api': ''
 				}
 			}
 		}
@@ -91,7 +95,7 @@ module.exports = {
 			name: "vendor"
 		}),
 		new HtmlWebpackPlugin({
-			template: "./index.html",
+			template: "./app/index.html",
 			inject: true
 		})
 	]

@@ -10,6 +10,19 @@
 	function APIDataService($http, $q) {
 		var _this = this;
 
+		// for converting binary images to Base64
+		function _arrayBufferToBase64(buffer) {
+			var binary = '';
+			var bytes = new Uint8Array(buffer);
+			var raw = String.fromCharCode(null, bytes);
+			// var len = bytes.byteLength;
+			// for (var i = 0; i < len; i++) {
+			// 	binary += String.fromCharCode(bytes[i]);
+			// }
+			//return window.btoa(binary);
+			return window.btoa(raw);
+		}
+
 		var reqParams = {
 			'url': '',
 			'width': 200
@@ -18,8 +31,9 @@
 		var headers = {};
 
 		var reqConfig = {
-			url: 'http://localhost:9900/thumb-api',
+			url: '/thumb-api',
 			method: 'GET',
+			responseType: 'arrayBuffer',
 			params: reqParams,
 			headers: headers
 		};
@@ -40,7 +54,10 @@
 			var defer = $q.defer();
 
 			$http(reqConfig).then(function(response) {
-				defer.resolve(response);
+				// var str = _arrayBufferToBase64(response.data);
+				var str = window.btoa(response.data);
+				console.log(str);
+				defer.resolve(str);
 			}, function(response) {
 				var data = response.data || 'Request failed';
 				var status = response.status;
@@ -50,9 +67,20 @@
 			return defer.promise;
 		};
 
+		var _requestHeaders = function(url) {
+			var defer = $q.defer();
+
+			$http.head(url).then(function(result){
+				defer.resolve(result);
+			}, function(err) {
+				defer.reject(err);
+			});
+		};
+
 		return {
 			setupReqParams: _setupReqParams,
-			requestThumbnail: _requestThumbnail
+			requestThumbnail: _requestThumbnail,
+			requestHeaders: _requestHeaders
 		};
 	}
 

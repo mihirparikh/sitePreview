@@ -15,17 +15,24 @@
 		vm.title = "This is the home page.";
 		// vm.textCount = 0;
 		vm.foundUrl = "";
-		var checkInterval = 1000; // milliseconds
+		vm.imgSrc = "";
+		var checkInterval = 3000; // milliseconds
 		var stopInterval = null;
+		var baseImageRequest = 'http://localhost:9900/thumb-api?width=300&url=';
+
+
+		// var queryparams = 'thumb-api?width=200&url=http://news.yahoo.com';
+		vm.imgPath = "";
 
 		var wordMap = {}; // TODO: this should be a LRU cache - maybe $cacheFactory
 
 		// test service function
-		apiService.setupReqParams('http://www.yahoo.com', 200);
-
-		apiService.requestThumbnail().then(function(result){
-			console.log("received thumbnail response!");
-		});
+		// apiService.setupReqParams('http://www.yahoo.com', 200);
+		//
+		// apiService.requestThumbnail().then(function(result){
+		// 	console.log("received thumbnail response!");
+		// 	vm.imgSrc = result;
+		// });
 
 		var intervalFunc = function () {
 			var words = vm.text.split(" ");
@@ -35,6 +42,9 @@
 				if (wordMap.hasOwnProperty(words[i])) {
 					if (wordMap[words[i]] === true) {
 						vm.foundUrl = words[i];
+						apiService.requestHeaders(vm.foundUrl).then(function (res) {
+							vm.imgPath = baseImageRequest + encodeURIComponent(vm.foundUrl);
+						});
 						return;
 					} else {
 						continue;
@@ -48,6 +58,10 @@
 					wordMap[words[i]] = true;
 					console.log(JSON.stringify(wordMap));
 					vm.foundUrl = words[i];
+					apiService.requestHeaders(vm.foundUrl).then(function (res) {
+						vm.imgPath = baseImageRequest + encodeURIComponent(vm.foundUrl);
+					});
+					// vm.imgPath = baseImageRequest + encodeURIComponent('http://news.yahoo.com');
 					return;
 				} else {
 					wordMap[words[i]] = false;
