@@ -10,6 +10,12 @@
 	function APIDataService($http, $q) {
 		var _this = this;
 
+		var _urlPattern = new RegExp(/(\b(https?):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/, 'ig');
+
+		function _getUrlPattern() {
+			return _urlPattern;
+		}
+
 		// for converting binary images to Base64
 		function _arrayBufferToBase64(buffer) {
 			var binary = '';
@@ -78,13 +84,14 @@
 				defer.reject(err);
 			});
 
-			return defer.promise;   
+			return defer.promise;
 		};
 
 		return {
 			setupReqParams: _setupReqParams,
 			requestThumbnail: _requestThumbnail,
-			requestHeaders: _requestHeaders
+			requestHeaders: _requestHeaders,
+			getUrlPattern: _getUrlPattern
 		};
 	}
 

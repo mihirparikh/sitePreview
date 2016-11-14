@@ -9,7 +9,7 @@
 
 		// URL Regex Pattern
 		// TODO: make it work without the 'http|https'
-		var pattern = new RegExp(/(\b(https?):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/, 'ig');
+		// var pattern = new RegExp(/(\b(https?):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/, 'ig');
 
 		vm.text = "";
 		vm.title = "This is the home page.";
@@ -35,9 +35,10 @@
 		// 	vm.imgSrc = result;
 		// });
 
+		// return imageUrl
 		var getImagePath = function(url) {
-			var headerPromise = apiService.requestHeaders(vm.foundUrl).then(function (res) {
-				return (baseImageRequest + encodeURIComponent(vm.foundUrl));
+			var headerPromise = apiService.requestHeaders(url).then(function (res) {
+				return (baseImageRequest + encodeURIComponent(url));
 			}, function(err) {
 				console.err('Bad URL: ' + err);
 			});
@@ -63,17 +64,17 @@
 
 				// match expression - insert into wordMap
 				// TODO: this is expensive so run it as little as possible
-				var match = pattern.exec(words[i]);
+				var match = apiService.getUrlPattern().exec(words[i]);
 				if (match !== null) {
 					// wordMap[words[i]] = true;
 					console.log(JSON.stringify(wordMap));
 					vm.foundUrl = words[i];
 					getImagePath(vm.foundUrl).then(function(result){
 						vm.imgPath = result;
-						wordMap[words[i]] = result;
+						wordMap[words[i]] = result; // cache if valid URL
 					}, function(err) {
 						vm.imgPath = '';
-						wordMap[words[i]] = null;
+						wordMap[words[i]] = null; // force 'cache-miss' for bad URLs
 					});
 					return;
 				}
@@ -98,14 +99,6 @@
 				}, checkInterval);
 			}
 		};
-
-		// function detectUrl(str) {
-		// 	var res = pattern.exec(str);
-		// 	if (res !== null) {
-		// 		console.log("Result: " + res);
-		// 		vm.foundUrl = res[0];
-		// 	}
-		// }
 	}
 
 	homeController.$inject = ['$interval', '$timeout', 'apiDataService'];

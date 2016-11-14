@@ -16,7 +16,6 @@ app.set('port', 9900);
 
 var http = require('http');
 
-
 //The url we want is `www.nodejitsu.com:1337/`
 app.get("/head-api",
 	function (req, resp, next) {
@@ -42,49 +41,6 @@ app.get("/head-api",
 			resp.status(400).json({status: 'failed'});
 		});
 	});
-
-// app.get("/thumb-api",
-// 	function (req, resp, next) {
-// 		console.log("Got thumb request: " + req.originalUrl);
-// 		if (req.query.url) {
-// 			next()
-// 		}
-// 	},
-// 	function (req, resp) {
-// 		console.log("Executing thunbalizr proxy call..");
-// 		var responseObj;
-// 		var page = '';
-// 		var imgHost = 'http://api.thumbalizr.com';
-// 		var queryStr = req.originalUrl.replace(/\/thumb-api/, '');
-// 		var options = {
-// 			host: imgHost,
-// 			method: 'GET',
-// 			path: "queryStr"
-// 		};
-// 		console.log("image req url: " + imgHost + queryStr);
-// 		var imgRequest = http.request(options, function(response) {
-// 			console.log("Thumbalizr status: " + response.statusCode);
-// 			console.log("Thumbalizr headers: " + response.headers);
-// 			// console.log("Thumbalizr response: " + response.statusCode);
-// 			response.on('data', function(chunk)
-// 			{
-// 				page = page + chunk;
-// 			});
-// 		});
-// 		imgRequest.on('end', function(){
-// 			//resp.status(200).write(page);
-// 			resp.write(page);
-// 			resp.end('');
-// 		});
-// 		imgRequest.on('error', function(err) {
-// 			console.error("Thumbalizr Error! " + err);
-// 			resp.status(400).send('Bad Request');
-// 		});
-// 	});
-// app.get('*', function (req, res) {
-// 	// load the single view file (angular will handle the page changes on the front-end)
-// 	res.sendFile(__dirname + '/build/');
-// });
 
 // proxy thumb-api calls over to thumbalizr for snapshot images
 app.use('/thumb-api', proxy('api.thumbalizr.com', {
