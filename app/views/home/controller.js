@@ -16,13 +16,14 @@
 		// vm.textCount = 0;
 		vm.foundUrl = "";
 		vm.imgSrc = "";
+		vm.imgPath = "";
 		var checkInterval = 3000; // milliseconds
 		var stopInterval = null;
 		var baseImageRequest = 'http://localhost:9900/thumb-api?width=300&url=';
 
 
 		// var queryparams = 'thumb-api?width=200&url=http://news.yahoo.com';
-		vm.imgPath = "";
+		// vm.imgPath = baseImageRequest + encodeURIComponent('www.apttus.com');
 
 		var wordMap = {}; // TODO: this should be a LRU cache - maybe $cacheFactory
 
@@ -34,37 +35,47 @@
 		// 	vm.imgSrc = result;
 		// });
 
+		var getImagePath = function(url) {
+			var headerPromise = apiService.requestHeaders(vm.foundUrl).then(function (res) {
+				return (baseImageRequest + encodeURIComponent(vm.foundUrl));
+			}, function(err) {
+				console.err('Bad URL: ' + err);
+			});
+
+			return headerPromise;
+		};
+
 		var intervalFunc = function () {
 			var words = vm.text.split(" ");
 			console.log("word array: " + words);
 
 			for (var i = 0; i < words.length; i++) {
+				// look within map
 				if (wordMap.hasOwnProperty(words[i])) {
-					if (wordMap[words[i]] === true) {
+					if (wordMap[words[i]] !== null) {
 						vm.foundUrl = words[i];
-						apiService.requestHeaders(vm.foundUrl).then(function (res) {
-							vm.imgPath = baseImageRequest + encodeURIComponent(vm.foundUrl);
-						});
+						vm.imgPath = wordMap[words[i]];
 						return;
 					} else {
 						continue;
 					}
 				}
 
-				// match expression - insert in to wordMap
+				// match expression - insert into wordMap
 				// TODO: this is expensive so run it as little as possible
-				var res = pattern.exec(words[i]);
-				if (res !== null) {
-					wordMap[words[i]] = true;
+				var match = pattern.exec(words[i]);
+				if (match !== null) {
+					// wordMap[words[i]] = true;
 					console.log(JSON.stringify(wordMap));
 					vm.foundUrl = words[i];
-					apiService.requestHeaders(vm.foundUrl).then(function (res) {
-						vm.imgPath = baseImageRequest + encodeURIComponent(vm.foundUrl);
+					getImagePath(vm.foundUrl).then(function(result){
+						vm.imgPath = result;
+						wordMap[words[i]] = result;
+					}, function(err) {
+						vm.imgPath = '';
+						wordMap[words[i]] = null;
 					});
-					// vm.imgPath = baseImageRequest + encodeURIComponent('http://news.yahoo.com');
 					return;
-				} else {
-					wordMap[words[i]] = false;
 				}
 			}
 			// no URL found!

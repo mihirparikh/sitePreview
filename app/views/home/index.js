@@ -3,7 +3,8 @@
 	
 	module.exports = angular.module('dashboard.views.home', [])
 		.config(['$stateProvider', function($stateProvider) {
-		$stateProvider.state('home', {
+		$stateProvider.state('app.home', {
+			parent: 'app',
 			url: '/home',
 			views: {
 				'centerpanel@': {

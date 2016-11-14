@@ -70,11 +70,15 @@
 		var _requestHeaders = function(url) {
 			var defer = $q.defer();
 
-			$http.head(url).then(function(result){
+			var url = "head-api?url=" + encodeURIComponent(url);
+
+			$http.get(url).then(function(result){
 				defer.resolve(result);
 			}, function(err) {
 				defer.reject(err);
 			});
+
+			return defer.promise;   
 		};
 
 		return {

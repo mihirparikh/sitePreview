@@ -1,9 +1,24 @@
-(function(){
+(function () {
 	'use strict';
 
-	module.exports = ['$stateProvider', '$httpProvider', function($stateProvider, $httpProvider){
+	function appConfig($urlRouterProvider, $stateProvider, $httpProvider, $locationProvider) {
 		// default state prov setup
-		// $httpProvider.defaults.useXDomain = true;
-		// delete $httpProvider.defaults.headers.common['X-Requested-With'];
-	}];
+		$locationProvider.html5Mode(true); // set html 5 mode
+
+		$urlRouterProvider.otherwise('/app/home');
+
+		$stateProvider.state('app', {
+			url: '/app',
+			abstract: true
+		});
+	}
+
+	appConfig.$inject = [
+		'$urlRouterProvider',
+		'$stateProvider',
+		'$httpProvider',
+		"$locationProvider"
+	];
+
+	module.exports = appConfig;
 })();
