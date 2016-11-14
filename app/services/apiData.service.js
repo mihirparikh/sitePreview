@@ -7,9 +7,11 @@
 
 	APIDataService.$inject = ['$http', '$q'];
 
+	// TODO: Add HTTP request interceptor to queue outbound HTTP head/image requests
 	function APIDataService($http, $q) {
 		var _this = this;
 
+		// TODO: make it work without the 'http|https'
 		var _urlPattern = new RegExp(/(\b(https?):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/, 'ig');
 
 		function _getUrlPattern() {
@@ -76,9 +78,9 @@
 		var _requestHeaders = function(url) {
 			var defer = $q.defer();
 
-			var url = "head-api?url=" + encodeURIComponent(url);
+			var reqUrl = "head-api?url=" + encodeURIComponent(url);
 
-			$http.get(url).then(function(result){
+			$http.get(reqUrl).then(function(result){
 				defer.resolve(result);
 			}, function(err) {
 				defer.reject(err);

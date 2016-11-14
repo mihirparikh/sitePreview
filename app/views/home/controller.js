@@ -4,43 +4,26 @@
 (function () {
 	'use strict';
 
-	function homeController($interval, $timeout, apiService) {
+	function homeController($interval, $timeout, apiService, appConfig) {
 		var vm = this;
 
-		// URL Regex Pattern
-		// TODO: make it work without the 'http|https'
-		// var pattern = new RegExp(/(\b(https?):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/, 'ig');
+		// vm.text = "";
+		vm.title = "Begin typing your message...";
 
-		vm.text = "";
-		vm.title = "This is the home page.";
-		// vm.textCount = 0;
 		vm.foundUrl = "";
-		vm.imgSrc = "";
 		vm.imgPath = "";
-		var checkInterval = 3000; // milliseconds
+
 		var stopInterval = null;
 		var baseImageRequest = 'http://localhost:9900/thumb-api?width=300&url=';
 
-
-		// var queryparams = 'thumb-api?width=200&url=http://news.yahoo.com';
-		// vm.imgPath = baseImageRequest + encodeURIComponent('www.apttus.com');
-
 		var wordMap = {}; // TODO: this should be a LRU cache - maybe $cacheFactory
-
-		// test service function
-		// apiService.setupReqParams('http://www.yahoo.com', 200);
-		//
-		// apiService.requestThumbnail().then(function(result){
-		// 	console.log("received thumbnail response!");
-		// 	vm.imgSrc = result;
-		// });
 
 		// return imageUrl
 		var getImagePath = function(url) {
 			var headerPromise = apiService.requestHeaders(url).then(function (res) {
 				return (baseImageRequest + encodeURIComponent(url));
 			}, function(err) {
-				console.err('Bad URL: ' + err);
+				console.error('Bad URL: ' + err);
 			});
 
 			return headerPromise;
@@ -80,14 +63,15 @@
 				}
 			}
 			// no URL found!
-			vm.foundUrl = "";
+			vm.foundUrl = '';
+			vm.imgPath = '';
 		};
 
 		// start
 		vm.onFocus = function () {
 			console.log('Begin polling...');
 
-			stopInterval = $interval(intervalFunc, checkInterval, /*count == 0 for indefinite */ 0, true);
+			stopInterval = $interval(intervalFunc, appConfig.pollInterval, /*count == 0 for indefinite */ 0, true);
 		};
 
 		// stop
@@ -96,12 +80,13 @@
 				$timeout(function () {
 					console.log('Stop polling...');
 					$interval.cancel(stopInterval);
-				}, checkInterval);
+					stopInterval = null; //TODO: not sure if this is abs needed?
+				}, appConfig.pollInterval);
 			}
 		};
 	}
 
-	homeController.$inject = ['$interval', '$timeout', 'apiDataService'];
+	homeController.$inject = ['$interval', '$timeout', 'apiDataService', 'appConfig'];
 
 	module.exports = homeController;
 })();

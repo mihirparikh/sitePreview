@@ -5,6 +5,7 @@
 	'use strict';
 
 	module.exports = angular.module('dashboard.services', [])
-		.service('apiDataService', require('./apiData.service'));
+		.service('apiDataService', require('./apiData.service'))
+		.provider('appConfig', require('./config.provider'));
 
 })();

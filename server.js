@@ -11,6 +11,7 @@ var http = require('http');
 var app = express();
 var path = require('path');
 var proxy = require('express-http-proxy');
+var url = require('url');
 
 app.set('port', 9900);
 
@@ -23,18 +24,30 @@ app.get("/head-api",
 		if (req.query.url) {
 			next();
 		} else {
-			resp.status(200).json({status: 'failed'});
+			resp.status(400).json({status: 'failed'});
 		}
 	},
 	function (req, resp) {
-		var host = req.query.url.replace(/.*?:\/\//g, "");
+		var targetUrl = url.parse(req.query.url);
+		console.log(JSON.stringify(targetUrl));
+
 		var options = {
-			host: host,
+			host: targetUrl.hostname,
+			port: targetUrl.port,
+			path: targetUrl.path,
 			method: 'HEAD'
 		};
-		var headReq = http.request(options, function (response) {
-			resp.status(200).json({status: 'success', resheaders: response.headers});
-		});
+		var headReq;
+		if (targetUrl.protocol.match(/^https/) !== null) {
+			headReq = https.request(options, function (response) {
+				resp.status(200).json({status: 'success', resheaders: response.headers});
+			});
+		} else {
+			headReq = http.request(options, function (response) {
+				resp.status(200).json({status: 'success', resheaders: response.headers});
+			});
+		}
+
 		headReq.end();
 		headReq.on('error', function(errStr){
 			console.error('Unable to connect: ' + errStr);
