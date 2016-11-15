@@ -12,6 +12,9 @@
 			abstract: true
 		});
 
+		// TODO: $httpIntercept for queing and rechecking
+		// $httpProvider.interceptors.push('appHttpInterceptor');
+
 		appConfigProvider.setPollInterval(3000); // set poll interval to 3 seconds
 
 		// TODO: Add HTTP req interceptors to $httpProvider

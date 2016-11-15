@@ -20,8 +20,15 @@
 
 		// return imageUrl
 		var getImagePath = function(url) {
+			console.log('getImagePath: ' + url);
 			var headerPromise = apiService.requestHeaders(url).then(function (res) {
-				return (baseImageRequest + encodeURIComponent(url));
+				// console.log(res);
+				if (res.data && res.data.location && res.data.location.length > 0) {
+					// redirect location
+					return (baseImageRequest + encodeURIComponent(res.data.location));
+				} else {
+					return (baseImageRequest + encodeURIComponent(url));
+				}
 			}, function(err) {
 				console.error('Bad URL: ' + err);
 			});
@@ -33,7 +40,9 @@
 			var words = vm.text.split(" ");
 			console.log("word array: " + words);
 
-			for (var i = 0; i < words.length; i++) {
+			// for (var i = 0; i < words.length; i++) {
+			// walk backward, display the newest url
+			for (var i = words.length - 1; i >= 0; i--) {
 				// look within map
 				if (wordMap.hasOwnProperty(words[i])) {
 					if (wordMap[words[i]] !== null) {
@@ -70,7 +79,6 @@
 		// start
 		vm.onFocus = function () {
 			console.log('Begin polling...');
-
 			stopInterval = $interval(intervalFunc, appConfig.pollInterval, /*count == 0 for indefinite */ 0, true);
 		};
 

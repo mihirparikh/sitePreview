@@ -17,6 +17,7 @@ app.set('port', 9900);
 
 var http = require('http');
 
+
 //The url we want is `www.nodejitsu.com:1337/`
 app.get("/head-api",
 	function (req, resp, next) {
@@ -29,7 +30,21 @@ app.get("/head-api",
 	},
 	function (req, resp) {
 		var targetUrl = url.parse(req.query.url);
-		console.log(JSON.stringify(targetUrl));
+		// console.log(JSON.stringify(targetUrl));
+
+		// callback for http/https
+		function httpReqCallback(response) {
+			// console.log("https req headers: " + JSON.stringify(response.headers));
+			// console.log("https req status: " + JSON.stringify(response.statusCode));
+
+			var data = {};
+			data['status'] = 'success';
+			if (response.statusCode === 301 || response.statusCode === 302) {
+				data['location'] = response.headers.location || '';
+			}
+			// resp.status(response.statusCode).json({status: 'success'});
+			resp.status(200).json(data);
+		}
 
 		var options = {
 			host: targetUrl.hostname,
@@ -39,13 +54,9 @@ app.get("/head-api",
 		};
 		var headReq;
 		if (targetUrl.protocol.match(/^https/) !== null) {
-			headReq = https.request(options, function (response) {
-				resp.status(200).json({status: 'success', resheaders: response.headers});
-			});
+			headReq = https.request(options, httpReqCallback);
 		} else {
-			headReq = http.request(options, function (response) {
-				resp.status(200).json({status: 'success', resheaders: response.headers});
-			});
+			headReq = http.request(options, httpReqCallback);
 		}
 
 		headReq.end();
@@ -60,7 +71,7 @@ app.use('/thumb-api', proxy('api.thumbalizr.com', {
 	https: true,
 	forwardPath: function (req, resp) {
 		var returnPath = require('url').parse(req.url).path;
-		console.log(returnPath);
+		// console.log(returnPath);
 		return returnPath;
 	}
 }));
